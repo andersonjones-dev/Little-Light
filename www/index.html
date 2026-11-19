@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#FFF8EA">
+<title>Little Light</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* VOICE: warm, gentle, encouraging — a storybook, never a classroom
+   IDEA: a picture book you open each day, lit by Pip the firefly
+   PICTURE: flat storybook scenes (hills, sun, characters) drawn in SVG
+   COLOUR and TYPE: sunshine, sky, soft green on warm cream; Baloo 2 + Nunito
+   LAYOUT: one-column mobile app, big rounded cards, slim floating tab bar */
+:root{color-scheme:light;--sun:#FFC93C;--sun-d:#C98A00;--sky:#7CC6F2;--sky-l:#E3F3FD;--leaf:#8CCB7A;--leaf-l:#E6F4DF;--leaf-d:#3F8A4A;--cream:#FFF8EA;--paper:#FFFDF8;--ink:#2C3A4B;--ink2:#5D6A79;--line:#EFE4CC;--peach:#FFD9C9;--lilac:#E8E0FA;--r:22px}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{margin:0;height:100%;background:var(--cream);color:var(--ink);font:600 16px/1.5 Nunito,system-ui,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input{font:inherit;font-size:16px}
+h1,h2,h3{font-family:'Baloo 2',Nunito,sans-serif;line-height:1.1;margin:0;font-weight:800}
+.app{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--cream);padding-top:var(--safe-area-inset-top,env(safe-area-inset-top,0px));padding-bottom:max(10px,var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
+@supports (height:100lvh){.app{padding-bottom:max(10px,calc(var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)) - clamp(0px,100lvh - 100dvh,60px)))}}
+.main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 16px 20px}
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px 4px}
+.top .who{display:flex;align-items:center;gap:8px;background:var(--paper);border-radius:99px;padding:4px 12px 4px 4px;min-height:44px;box-shadow:0 2px 0 var(--line)}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:800 17px 'Baloo 2',Nunito,system-ui,sans-serif;flex:none}
+.top .sp{flex:1}
+.gbtn{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:99px;background:var(--paper);color:var(--ink2);font-size:14px;box-shadow:0 2px 0 var(--line)}
+.hello{margin:8px 2px 12px}.hello h1{font-size:30px}.hello p{margin:2px 0 0;color:var(--ink2)}
+.card{background:var(--paper);border-radius:var(--r);box-shadow:0 3px 0 var(--line);overflow:hidden;margin-bottom:14px}
+.hero .pic{height:170px;position:relative;background:var(--sky-l)}.pic svg{position:absolute;inset:0;width:100%;height:100%}
+.hero .body{padding:14px 16px 16px}
+.tag{display:inline-block;font-size:12.5px;font-weight:800;color:var(--leaf-d);background:var(--leaf-l);border-radius:99px;padding:3px 10px;margin-bottom:6px}
+.tag.sun{color:#8a5d00;background:#FFF0C2}.tag.sky{color:#1d5a85;background:var(--sky-l)}.tag.lil{color:#4b3a85;background:var(--lilac)}.tag.pch{color:#8a3d22;background:var(--peach)}
+.hero h2{font-size:25px}.muted{color:var(--ink2);font-size:15px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 22px;border-radius:99px;background:var(--sun);color:#3a2a00;font:800 18px 'Baloo 2',Nunito,system-ui,sans-serif;box-shadow:0 4px 0 var(--sun-d)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--sun-d)}
+.btn.sky{background:var(--sky);color:#0e3550;box-shadow:0 4px 0 #3f93c4}.btn.leaf{background:var(--leaf);color:#173d1c;box-shadow:0 4px 0 #5a9c4a}
+.btn.ghost{background:var(--paper);color:var(--ink);box-shadow:0 3px 0 var(--line);font-size:16px}
+.btn.wide{width:100%}.btn[disabled]{opacity:.5}
+.row{display:flex;align-items:center;gap:12px}
+.ring{--p:0;width:58px;height:58px;border-radius:50%;background:conic-gradient(var(--leaf) calc(var(--p)*1%),#EFE8D6 0);display:grid;place-items:center;flex:none}
+.ring b{width:44px;height:44px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font:800 15px 'Baloo 2',Nunito,system-ui,sans-serif}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:14px}
+.tile{background:var(--paper);border-radius:var(--r);box-shadow:0 3px 0 var(--line);text-align:left;padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:170px}
+.tile .pic{height:92px;position:relative}.tile .tx{padding:10px 12px 12px}.tile h3{font-size:18px}.tile .muted{font-size:13.5px;line-height:1.3}
+.done-dot{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:800;color:var(--leaf-d)}
+.fun{padding:16px;display:flex;gap:14px;align-items:center}
+.fun .ic{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;flex:none}
+.fun h3{font-size:19px}.fun .muted{font-size:14px;line-height:1.35}
+.foot{text-align:center;font-size:13px;color:var(--ink2);padding:6px 0 4px}.foot button{color:var(--ink2);text-decoration:underline;min-height:44px;font-size:13px}
+.tabs{margin:0 16px;display:flex;background:var(--paper);border-radius:99px;padding:5px;box-shadow:0 4px 14px rgba(80,60,20,.12)}
+.tabs button{flex:1;min-height:46px;border-radius:99px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ink2);gap:1px}
+.tabs button svg{width:22px;height:22px}
+.tabs button.on{background:#FFF0C2;color:#6b4a00}
+/* full-screen views */
+.full{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--cream);padding-top:var(--safe-area-inset-top,env(safe-area-inset-top,0px));padding-bottom:max(10px,var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
+@supports (height:100lvh){.full{padding-bottom:max(10px,calc(var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)) - clamp(0px,100lvh - 100dvh,60px)))}}
+.bar{display:flex;align-items:center;gap:8px;padding:8px 12px}
+.ib{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--paper);box-shadow:0 2px 0 var(--line);flex:none}
+.ib svg{width:22px;height:22px}
+.dots{flex:1;display:flex;gap:4px;justify-content:center}.dots i{height:7px;flex:1;max-width:22px;border-radius:9px;background:#EADFC6}.dots i.on{background:var(--sun)}
+.scene{aspect-ratio:400/240;max-height:44%;flex:none;position:relative;margin:0 12px;border-radius:26px;overflow:hidden;background:var(--sky-l)}
+.scene svg{position:absolute;inset:0;width:100%;height:100%}
+.page{flex:1;overflow-y:auto;padding:14px 18px 8px}
+.page p.story{font-size:19px;line-height:1.55;margin:6px 0 0;font-weight:700}
+.page h2{font-size:26px;margin-top:4px}
+.nav{display:flex;gap:10px;padding:8px 16px 0}
+.nav .btn{flex:1}
+.opts{display:grid;gap:10px;margin-top:12px}
+.opt{min-height:54px;border-radius:18px;background:var(--paper);box-shadow:0 3px 0 var(--line);text-align:left;padding:10px 16px;font-size:17px;font-weight:800;display:flex;align-items:center;gap:10px}
+.opt.right{background:var(--leaf-l);box-shadow:0 3px 0 var(--leaf)}.opt.soft{background:#FFF0C2;box-shadow:0 3px 0 #F2D27A}.opt.sel{background:var(--sky-l);box-shadow:0 3px 0 var(--sky)}
+.fb{margin-top:12px;padding:12px 14px;border-radius:16px;background:var(--leaf-l);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{min-height:44px;padding:0 16px;border-radius:99px;background:var(--paper);box-shadow:0 2px 0 var(--line);font-weight:800;font-size:15px}
+.chip.on{background:var(--sky);color:#0e3550;box-shadow:0 2px 0 #3f93c4}
+.read{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:99px;background:var(--sky-l);color:#1d5a85;font-size:14px;font-weight:800;margin-top:10px}
+/* verse */
+.verse{font:800 26px/1.3 'Baloo 2',Nunito,system-ui,sans-serif;text-align:center;padding:18px 10px 6px}
+.ref{text-align:center;color:var(--ink2);font-size:14px}
+.slots{display:grid;gap:8px;margin-top:14px}
+.slot{min-height:52px;border-radius:16px;border:2px dashed #E3D6B8;display:flex;align-items:center;padding:0 14px;font-weight:800;font-size:18px;color:var(--ink2)}
+.slot.fill{border:2px solid var(--leaf);background:var(--leaf-l);color:var(--ink)}
+.tiles{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;justify-content:center}
+.wt{min-height:50px;padding:0 16px;border-radius:16px;background:#FFF0C2;box-shadow:0 3px 0 #F2D27A;font-weight:800;font-size:17px}
+.wt.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+/* overlays */
+.ov{position:absolute;inset:0;background:rgba(44,58,75,.35);display:flex;align-items:flex-end;justify-content:center;z-index:20;padding:12px}
+.sheet{background:var(--paper);border-radius:28px;width:100%;max-width:460px;padding:20px 18px calc(18px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)));max-height:92%;overflow-y:auto}
+.ov.mid{align-items:center}
+.pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.pinpad button{min-height:60px;border-radius:18px;background:var(--cream);font:800 24px 'Baloo 2',Nunito,system-ui,sans-serif;box-shadow:0 3px 0 var(--line)}
+.pd{display:flex;gap:14px;justify-content:center;margin-top:14px}.pd i{width:16px;height:16px;border-radius:50%;border:2px solid #CDBF9F}.pd i.on{background:var(--ink);border-color:var(--ink)}
+.cele svg{width:100%;height:150px;display:block}
+/* parent */
+.pmode{background:#F4F6F8}.pmode .main{padding-top:4px}
+.pchips{display:flex;gap:8px;overflow-x:auto;padding:4px 16px 10px;scrollbar-width:none}.pchips::-webkit-scrollbar{display:none}
+.pchips button{flex:none;min-height:40px;padding:0 14px;border-radius:99px;background:#fff;font-weight:800;font-size:14px;color:var(--ink2);border:1px solid #E1E6EC}
+.pchips button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pc{background:#fff;border-radius:18px;border:1px solid #E6EAEF;padding:14px 16px;margin-bottom:12px}
+.pc h3{font-size:19px;margin-bottom:4px}
+.li{display:flex;align-items:center;gap:10px;min-height:52px;border-top:1px solid #EEF1F4}.li:first-of-type{border-top:0}
+.li .lab{flex:1;font-weight:700}.li .lab small{display:block;color:var(--ink2);font-weight:600;font-size:13px}
+.step{display:flex;align-items:center;gap:6px}.step button{width:44px;height:44px;border-radius:12px;background:#F1F4F7;font:800 22px 'Baloo 2',Nunito,system-ui,sans-serif}.step b{min-width:64px;text-align:center}
+.li.col{flex-direction:column;align-items:stretch;gap:6px}.li.col .seg button{flex:1}
+.seg{display:flex;background:#F1F4F7;border-radius:12px;padding:3px;gap:3px}.seg button{min-height:40px;padding:0 10px;border-radius:10px;font-size:14px;font-weight:800;color:var(--ink2)}.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.stat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.stat div{background:#F6F8FA;border-radius:14px;padding:10px 12px}.stat b{font:800 22px 'Baloo 2',Nunito,system-ui,sans-serif;display:block}.stat span{font-size:13px;color:var(--ink2)}
+.note{font-size:13.5px;color:var(--ink2);background:#FFF7E0;border-radius:12px;padding:10px 12px;margin-top:8px}
+.tin{flex:1;min-height:44px;border:1px solid #DDE3EA;border-radius:12px;padding:0 12px;background:#fff}
+.xs{min-height:44px;padding:0 12px;border-radius:12px;background:#F1F4F7;font-weight:800;font-size:14px}
+.xs.warn{background:#FFE9DF;color:#8a3d22}
+details{border-top:1px solid #EEF1F4;padding:6px 0}details summary{min-height:44px;display:flex;align-items:center;font-weight:800;cursor:pointer}
+ol.steps{margin:6px 0 0;padding-left:20px}ol.steps li{margin:4px 0}
+.badge{font-size:12px;font-weight:800;padding:3px 9px;border-radius:99px;background:#F1F4F7;color:var(--ink2)}
+.badge.ok{background:var(--leaf-l);color:var(--leaf-d)}.badge.wait{background:#FFF0C2;color:#7a5400}
+.timer{width:220px;height:220px;margin:10px auto;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--sky) calc(var(--p)*1%),#E7EEF3 0)}
+.timer div{width:180px;height:180px;border-radius:50%;background:var(--cream);display:grid;place-items:center;text-align:center}
+.timer b{font:800 46px 'Baloo 2',Nunito,system-ui,sans-serif;display:block;line-height:1}
+.honest{display:flex;gap:10px;align-items:flex-start;background:var(--sky-l);border-radius:16px;padding:12px 14px;font-size:14px;color:#1d4a6b}
+.applist{max-height:420px;overflow-y:auto;margin-top:8px}.applist .li img{width:36px;height:36px;border-radius:9px;flex:none}
+.tog{width:52px;height:32px;border-radius:99px;background:#D7DEE5;position:relative;flex:none}.tog::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .15s}.tog.on{background:var(--leaf-d)}.tog.on::after{left:23px}
+.perm{display:flex;align-items:center;gap:10px;min-height:56px;border-top:1px solid #EEF1F4}.perm:first-of-type{border-top:0}.perm .ok{color:var(--leaf-d);font-weight:800}
+.big{font:800 22px 'Baloo 2',Nunito,system-ui,sans-serif}
+.pickgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.pick{background:var(--paper);border-radius:24px;box-shadow:0 3px 0 var(--line);padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;font:800 20px 'Baloo 2',Nunito,system-ui,sans-serif}
+.pick .av{width:72px;height:72px;font-size:32px}
+@media (prefers-reduced-motion:no-preference){.pop{animation:pop .35s ease-out}@keyframes pop{from{transform:scale(.9);opacity:0}}}
+@media (min-width:700px){.main{padding-left:max(16px,calc(50% - 320px));padding-right:max(16px,calc(50% - 320px))}.tabs{align-self:center;width:480px}.scene{max-height:48%;align-self:center;width:min(100% - 24px,760px)}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script src="capacitor.js"></script>
+<script>
+{
+/* ---------- data ---------- */
+const KEY='littlelight-proto-v1';
+const dk=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const AV=[['#FFC93C','#6b4a00'],['#7CC6F2','#0e3550'],['#8CCB7A','#173d1c'],['#F6A9C0','#6e1f3d'],['#C9B8F0','#3b2c75']];
+const fresh=()=>({children:[{id:'c1',name:'Asha',av:0},{id:'c2',name:'Noah',av:1}],cur:null,pin:null,set:{faith:10,fun:30,rule:'either',approval:'optional',apps:['YouTube Kids','Drawing app']},prog:{},stories:{dg:true,gs:true,jf:true,zm:true}});
+let S=null;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.set)S=fresh();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const P=id=>S.prog[id]||(S.prog[id]={days:{},garden:0,stars:0,stories:0,verses:0,kind:0,acts:0});
+const D=id=>{const p=P(id),k=dk();return p.days[k]||(p.days[k]={faithSec:0,appSec:0,story:false,verse:false,kind:false,approved:false,fun:null})};
+const kid=()=>S.children.find(c=>c.id===S.cur);
+const U={view:'home',step:0,ans:{},ptab:'today',ov:null,pin:'',pinMode:null,pinFirst:'',pinAfter:null,vs:[],vtiles:[],confirm:null,kindIx:0};
+
+/* ---------- Android helper (only inside the Android app) ---------- */
+const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+const G=NATIVE&&window.capacitorExports?capacitorExports.registerPlugin('Guard'):null;
+let GS=null;
+async function gStatus(){if(!G)return null;try{GS=await G.status()}catch(e){GS=null}return GS}
+async function gCall(fn,arg){if(!G)return null;try{GS=await G[fn](arg||{})}catch(e){}return GS}
+const guardOn=()=>!!(GS&&GS.enabled&&GS.usageAccess&&GS.overlay);
+if(!S.set.blockApps)S.set.blockApps=[];
+
+/* ---------- content ---------- */
+const STORIES=[
+ {id:'dg',t:'David and Goliath',th:'Courage and trusting God',sub:'A true story about being brave and trusting God',ref:'1 Samuel 17',ready:true,col:'#E3F3FD'},
+ {id:'gs',t:'The Good Samaritan',th:'Kindness and loving others',ref:'Luke 10:25–37',col:'#E6F4DF'},
+ {id:'jf',t:'Joseph Forgives',th:'Forgiveness',ref:'Genesis 37–50 (Genesis 45)',col:'#E8E0FA'},
+ {id:'zm',t:'Zacchaeus Makes It Right',th:'Honesty and making things right',ref:'Luke 19:1–10',col:'#FFE8DD'}];
+const PROMPTS={dg:['When have you felt brave? What helped you?','David used something he already knew how to do: his sling. What gifts has God given you?','What is one "giant" our family could pray about together?'],
+ gs:['Who was the good neighbour in the story? How do you know?','Who might need kindness at school, church or home this week?','How can we help someone who is different from us?'],
+ jf:['How do you think Joseph felt when his brothers came to Egypt?','Why can forgiving someone feel hard?','Is there someone we need to forgive, or ask to forgive us?'],
+ zm:['How did Zacchaeus change after meeting Jesus?','What does "making it right" look like after we do something wrong?','Jesus went to Zacchaeus\'s house. How can our family welcome others?']};
+const DG=[
+ {k:'read',sc:'camp',ref:'1 Samuel 17:1–3',x:'Long ago, two armies faced each other across a valley. God\'s people, the Israelites, camped on one hill. The Philistine army camped on the hill across from them.'},
+ {k:'read',sc:'giant',ref:'1 Samuel 17:4–11, 16',x:'The Philistines had a champion called Goliath. He was a giant, much taller than anyone else, and he wore heavy bronze armour. Morning and evening, for forty days, he shouted a challenge for someone to come and fight him. King Saul\'s soldiers were very afraid.'},
+ {k:'read',sc:'shepherd',ref:'1 Samuel 17:12–23',x:'David was the youngest son in his family, and he looked after his father\'s sheep. One day his father sent him to the army camp with food for his older brothers. While he was there, David heard Goliath\'s challenge.'},
+ {k:'ask',sc:'think',q:'Imagine you were in the camp. How might you feel hearing the giant shout?',o:['Scared','Curious','Brave','Not sure'],f:'Thank you for sharing! Any feeling is okay. Even grown-up soldiers felt scared. Let\'s see what David did.'},
+ {k:'read',sc:'king',ref:'1 Samuel 17:32–37',x:'David told King Saul that he would go and fight Goliath. Saul said David was too young. But David explained that while he was guarding the sheep, God had helped him rescue them from a lion and a bear. He trusted that God would help him again.'},
+ {k:'read',sc:'armour',ref:'1 Samuel 17:38–40',x:'Saul dressed David in his own armour and helmet. They were so big and heavy that David could hardly walk! So he took them off. He took his shepherd\'s staff and his sling, and chose five smooth stones from a stream.'},
+ {k:'quiz',sc:'stones',q:'How many smooth stones did David choose?',o:['Three','Five','Ten'],a:1,f:'Yes! Five smooth stones from the stream.',w:'Good try! Look again: David chose five smooth stones.'},
+ {k:'read',sc:'face',ref:'1 Samuel 17:41–47',x:'Goliath made fun of David because he was young. David answered that Goliath came with a sword and spear, but David came in the name of the Lord. He said everyone would see that the battle belongs to God.'},
+ {k:'read',sc:'win',ref:'1 Samuel 17:48–52',x:'David ran toward Goliath, put a stone in his sling and let it fly. The stone hit Goliath on the forehead, and the giant fell to the ground. The Philistine army ran away, and God\'s people were safe.'},
+ {k:'quiz',sc:'think',q:'Who did David trust to help him?',o:['His big brothers','King Saul\'s armour','God'],a:2,f:'That\'s right. David trusted God, just like he did with the lion and the bear.',w:'Good thinking! David trusted God to help him, not armour or anyone else.'},
+ {k:'lesson',sc:'pip',x:'When something feels big and scary, I can trust God to be with me. Being brave doesn\'t mean never feeling afraid. It means trusting God even when we do.',v:'“When I am afraid, I will put my trust in you.”',vr:'Psalm 56:3 (WEB)'},
+ {k:'act',sc:'pip',q:'What feels like a "giant" to you right now?',o:['The dark','Something new','A test at school','A doctor visit','Feeling left out','Something else']}];
+const VERSE={parts:['When I am afraid,','I will put','my trust','in you.'],ref:'Psalm 56:3',tr:'World English Bible (public domain)'};
+const KIND=[['Help at home','Help someone at home without being asked.'],['Share','Share something you like with someone.'],['Say thank you','Thank someone who helps you, like a parent, teacher or friend.'],['Encourage','Say something kind to encourage a friend.'],['Forgive','If someone hurt your feelings, choose to forgive them.'],['Make a card','Draw a picture to make someone smile.'],['Pray','Pray for a friend or someone in your family.'],['Tidy up','Tidy a mess, even one you didn\'t make.']];
+const CHEER=['You\'re shining bright today!','Well done, little light!','God loves you so much!','That was wonderful to see!','Step by step, you\'re growing!'];
+
+/* ---------- drawings ---------- */
+const sky=(c='#CDEBFB')=>`<rect width="400" height="240" fill="${c}"/>`;
+const sun=(x=330,y=48)=>`<circle cx="${x}" cy="${y}" r="44" fill="#FFE58A" opacity=".45"/><circle cx="${x}" cy="${y}" r="26" fill="#FFD23F"/>`;
+const cloud=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})" fill="#fff"><ellipse cx="0" cy="0" rx="26" ry="12"/><ellipse cx="18" cy="-8" rx="18" ry="13"/><ellipse cx="-14" cy="-6" rx="14" ry="10"/></g>`;
+const hills=(a='#A7D98F',b='#8CCB7A')=>`<path d="M0 168 Q70 118 160 150 T400 140 V240 H0Z" fill="${a}"/><path d="M0 200 Q120 160 230 190 T400 182 V240 H0Z" fill="${b}"/>`;
+const shadow=(x,y,rx)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${rx/4}" fill="#2c3a4b" opacity=".12"/>`;
+function person(x,y,s,o={}){const sk=o.skin||'#D9A47C',tu=o.tunic||'#5FA86A',ha=o.hair||'#5a3a22',up=o.up;
+ const arm=(m)=>up?`<path d="M${12*m} -50 Q${22*m} -64 ${18*m} -80" stroke="${sk}" stroke-width="7" fill="none" stroke-linecap="round"/>`:`<path d="M${12*m} -50 Q${21*m} -40 ${19*m} -28" stroke="${sk}" stroke-width="7" fill="none" stroke-linecap="round"/>`;
+ return `<g transform="translate(${x} ${y}) scale(${s})">${shadow(0,0,18)}<rect x="-9" y="-22" width="7" height="21" rx="3.5" fill="${sk}"/><rect x="2" y="-22" width="7" height="21" rx="3.5" fill="${sk}"/>${arm(-1)}${arm(1)}<path d="M-15 -18 Q-17 -52 0 -56 Q17 -52 15 -18 Z" fill="${tu}"/><rect x="-15" y="-36" width="30" height="4" rx="2" fill="${o.belt||'#9a6a3a'}"/><circle cx="0" cy="-68" r="13" fill="${sk}"/>${o.helm?'':`<path d="M-13 -69 Q-14 -85 0 -84 Q14 -85 13 -69 Q8 -77 0 -76 Q-8 -77 -13 -69Z" fill="${ha}"/>`}<circle cx="-4.5" cy="-67" r="1.7" fill="#2c3a4b"/><circle cx="4.5" cy="-67" r="1.7" fill="#2c3a4b"/>${o.stern?`<path d="M-4 -60 H4" stroke="#2c3a4b" stroke-width="1.6" stroke-linecap="round"/>`:`<path d="M-4 -61 Q0 -57.5 4 -61" stroke="#2c3a4b" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="-8" cy="-62" r="2.4" fill="#F28C8C" opacity=".45"/><circle cx="8" cy="-62" r="2.4" fill="#F28C8C" opacity=".45"/>`}${o.extra||''}</g>`}
+const crown=`<path d="M-10 -80 L-10 -90 L-5 -84 L0 -92 L5 -84 L10 -90 L10 -80Z" fill="#FFC93C" stroke="#C98A00" stroke-width="1"/>`;
+const helm=(c='#B9A27A')=>`<path d="M-15 -66 Q-15 -88 0 -88 Q15 -88 15 -66 L11 -66 Q11 -80 0 -80 Q-11 -80 -11 -66Z" fill="${c}"/><rect x="-2" y="-96" width="4" height="10" rx="2" fill="#C2524A"/>`;
+const sheep=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})">${shadow(0,0,14)}<rect x="-8" y="-9" width="3" height="9" fill="#5b4a3a"/><rect x="5" y="-9" width="3" height="9" fill="#5b4a3a"/><g fill="#fff"><circle cx="-8" cy="-16" r="8"/><circle cx="2" cy="-19" r="9"/><circle cx="10" cy="-14" r="7"/><circle cx="-2" cy="-11" r="8"/></g><ellipse cx="-16" cy="-17" rx="5" ry="6" fill="#5b4a3a"/></g>`;
+const tent=(x,y,c)=>`<path d="M${x} ${y} l22 -28 l22 28z" fill="${c}"/><path d="M${x+22} ${y} l-5 -10 l10 0z" fill="#2c3a4b" opacity=".35"/>`;
+const stone=(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="9" ry="6" fill="#B8BFC7"/><ellipse cx="${x-2}" cy="${y-2}" rx="4" ry="2" fill="#E2E6EA"/>`;
+function pip(x,y,s=1){return `<g transform="translate(${x} ${y}) scale(${s})"><circle cy="10" r="28" fill="#FFE58A" opacity=".35"/><circle cy="10" r="17" fill="#FFE58A" opacity=".6"/><ellipse cx="-11" cy="-10" rx="12" ry="7" fill="#fff" opacity=".9" transform="rotate(-35 -11 -10)"/><ellipse cx="11" cy="-10" rx="12" ry="7" fill="#fff" opacity=".9" transform="rotate(35 11 -10)"/><ellipse cy="10" rx="10" ry="11" fill="#FFD23F"/><ellipse cy="-5" rx="11" ry="10" fill="#6B5544"/><circle cx="-4" cy="-6" r="2.2" fill="#fff"/><circle cx="4" cy="-6" r="2.2" fill="#fff"/><circle cx="-3.6" cy="-5.6" r="1.1" fill="#2c3a4b"/><circle cx="4.4" cy="-5.6" r="1.1" fill="#2c3a4b"/><path d="M-3 -1 Q0 1.5 3 -1" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M-4 -14 Q-8 -24 -12 -24 M4 -14 Q8 -24 12 -24" stroke="#6B5544" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`}
+const svg=(b)=>`<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${b}</svg>`;
+const DAVID={tunic:'#6FB27A',hair:'#7a4a24'};
+const SC={
+ camp:()=>svg(sky()+sun(200,46)+cloud(80,50)+cloud(300,70,.8)+`<path d="M0 150 Q60 100 150 140 L150 240 H0Z" fill="#A7D98F"/><path d="M400 150 Q340 100 250 140 L250 240 H400Z" fill="#B5DC93"/><path d="M150 140 Q200 175 250 140 L250 240 H150Z" fill="#8CCB7A"/><path d="M175 240 Q195 190 200 160 Q205 190 228 240Z" fill="#9BD3F2"/>`+tent(30,140,'#F4F0E6')+tent(78,132,'#FFD9A8')+tent(285,132,'#E9B9A8')+tent(332,140,'#D7C6EC')),
+ giant:()=>svg(sky('#D8EEFB')+cloud(90,40)+hills('#B5DC93','#9CD083')+person(300,214,1.75,{tunic:'#B48A57',skin:'#D29C74',stern:1,helm:1,extra:helm('#A88D5E')+'<path d="M24 -96 V0" stroke="#7a5a3a" stroke-width="4"/><path d="M24 -104 l-5 10 h10z" fill="#9AA3AD"/>'})+person(70,214,.7,{tunic:'#7C9CC9',hair:'#3b2a1a'})+person(110,218,.7,{tunic:'#C98C6B',hair:'#2a1d12'})),
+ shepherd:()=>svg(sky()+sun(60,50)+cloud(250,50)+hills()+sheep(260,212,1.2)+sheep(320,200,1)+sheep(215,200,.9)+person(140,214,1,{...DAVID,extra:'<path d="M20 -40 V4" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/><path d="M20 -40 Q20 -52 28 -50" stroke="#8a5a2b" stroke-width="4" fill="none" stroke-linecap="round"/>'})),
+ king:()=>svg(sky('#F6E9D2')+`<rect y="180" width="400" height="60" fill="#E8D3AE"/><rect x="40" y="40" width="320" height="140" fill="#F1E2C4"/><path d="M40 40 h320 l-20 -20 h-280z" fill="#D9B98A"/><rect x="80" y="70" width="40" height="110" fill="#E3C9A0"/><rect x="280" y="70" width="40" height="110" fill="#E3C9A0"/>`+person(250,224,1.25,{tunic:'#8E6CC2',hair:'#4a3a2a',extra:crown})+person(150,224,1,DAVID)),
+ armour:()=>svg(sky('#F6E9D2')+`<rect y="180" width="400" height="60" fill="#E8D3AE"/>`+person(270,224,1.2,{tunic:'#8E6CC2',hair:'#4a3a2a',extra:crown})+person(150,224,1,{...DAVID,helm:1,extra:'<path d="M-24 -54 Q-26 -14 -20 -6 H20 Q26 -14 24 -54 Q0 -64 -24 -54Z" fill="#B9A27A"/><circle cx="0" cy="-68" r="13" fill="#D9A47C"/><circle cx="-4.5" cy="-67" r="1.7" fill="#2c3a4b"/><circle cx="4.5" cy="-67" r="1.7" fill="#2c3a4b"/><ellipse cx="0" cy="-60" rx="3" ry="2.4" fill="#2c3a4b"/><path d="M-22 -71 Q-22 -104 0 -104 Q22 -104 22 -71 Q0 -77 -22 -71Z" fill="#A88D5E"/><path d="M-20 -73 Q0 -79 20 -73" stroke="#7d6a45" stroke-width="3" fill="none"/>'})),
+ stones:()=>svg(sky()+sun(340,40)+hills()+`<path d="M0 205 Q100 190 200 206 T400 200 V240 H0Z" fill="#9BD3F2"/>`+stone(70,215)+stone(110,222)+stone(150,214)+stone(195,224)+stone(240,216)+person(310,214,1,{...DAVID,extra:'<path d="M-19 -28 Q-26 -10 -16 -6" stroke="#8a5a2b" stroke-width="2" fill="none"/>'})),
+ face:()=>svg(sky('#D8EEFB')+hills('#B5DC93','#9CD083')+person(110,220,.95,{...DAVID})+person(300,216,1.75,{tunic:'#B48A57',skin:'#D29C74',stern:1,helm:1,extra:helm('#A88D5E')})+`<path d="M160 110 q12 -10 24 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>`),
+ win:()=>svg(sky('#FFF1C9')+sun(200,60)+`<g stroke="#FFD23F" stroke-width="5" stroke-linecap="round" opacity=".6"><path d="M200 8 V-2"/><path d="M140 30 l-8 -6"/><path d="M260 30 l8 -6"/></g>`+hills()+tent(30,180,'#F4F0E6')+tent(330,182,'#D7C6EC')+person(200,220,1.1,{...DAVID,up:1})+person(120,222,.8,{tunic:'#7C9CC9',hair:'#3b2a1a',up:1})+person(280,222,.8,{tunic:'#C98C6B',hair:'#2a1d12',up:1})),
+ think:()=>svg(sky('#E8E0FA')+cloud(80,60)+cloud(320,50,.9)+hills('#C9E7B6','#B2DC9C')+pip(200,110,1.6)),
+ pip:()=>svg(sky('#FFF1C9')+sun(330,48)+hills()+`<g fill="#fff" opacity=".9"><circle cx="70" cy="60" r="3"/><circle cx="120" cy="34" r="2"/><circle cx="280" cy="100" r="2.5"/></g>`+pip(200,112,1.7)),
+ home:()=>svg(sky()+sun(335,44)+cloud(90,44)+cloud(230,70,.7)+hills()+`<path d="M190 240 Q210 200 260 182 Q300 170 330 176" stroke="#F4E3BE" stroke-width="16" fill="none" stroke-linecap="round"/>`+pip(96,120,1.3)+sheep(300,200,.9)),
+ verse:()=>svg(sky('#E3F3FD')+cloud(70,50)+`<rect x="130" y="70" width="140" height="120" rx="10" fill="#FFFDF8"/><path d="M200 70 V190" stroke="#E5D9BE" stroke-width="2"/><g stroke="#D9CBAA" stroke-width="3" stroke-linecap="round"><path d="M145 100 h40 M145 115 h44 M145 130 h36 M215 100 h40 M215 115 h34 M215 130 h42"/></g>`+pip(300,96,.9)),
+ kind:()=>svg(sky('#FFE8DD')+hills('#C9E7B6','#B2DC9C')+`<path d="M200 168 c-30 -24 -46 -40 -46 -58 a22 22 0 0 1 46 -8 a22 22 0 0 1 46 8 c0 18 -16 34 -46 58z" fill="#F59BB0"/>`+pip(310,90,.8)),
+ fun:()=>svg(sky('#E3F3FD')+cloud(320,50)+hills()+`<rect x="150" y="80" width="100" height="130" rx="16" fill="#2C3A4B"/><rect x="158" y="92" width="84" height="104" rx="8" fill="#9BD3F2"/><circle cx="200" cy="144" r="18" fill="#FFD23F"/>`)
+};
+/* garden items */
+const GI=[
+ ['Daisy',(x,y)=>`<path d="M${x} ${y} v-24" stroke="#4E9A54" stroke-width="3"/><g fill="#fff">${[0,60,120,180,240,300].map(a=>`<ellipse cx="${x}" cy="${y-32}" rx="4" ry="8" transform="rotate(${a} ${x} ${y-24})"/>`).join('')}</g><circle cx="${x}" cy="${y-24}" r="4" fill="#FFD23F"/>`],
+ ['Tulip',(x,y)=>`<path d="M${x} ${y} v-26" stroke="#4E9A54" stroke-width="3"/><path d="M${x-8} ${y-34} q0 14 8 14 q8 0 8 -14 l-4 4 l-4 -6 l-4 6z" fill="#F59BB0"/>`],
+ ['Little bush',(x,y)=>`<g fill="#6DB66A"><circle cx="${x-10}" cy="${y-10}" r="11"/><circle cx="${x+8}" cy="${y-12}" r="12"/><circle cx="${x}" cy="${y-20}" r="11"/></g><circle cx="${x-4}" cy="${y-16}" r="2" fill="#F59BB0"/><circle cx="${x+8}" cy="${y-8}" r="2" fill="#F59BB0"/>`],
+ ['Butterfly',(x,y)=>`<g transform="translate(${x} ${y-50})"><ellipse cx="-7" cy="-4" rx="8" ry="6" fill="#C9B8F0"/><ellipse cx="7" cy="-4" rx="8" ry="6" fill="#C9B8F0"/><ellipse cx="-5" cy="5" rx="5" ry="4" fill="#F59BB0"/><ellipse cx="5" cy="5" rx="5" ry="4" fill="#F59BB0"/><rect x="-1.2" y="-8" width="2.4" height="16" rx="1.2" fill="#2c3a4b"/></g>`],
+ ['Sunflower',(x,y)=>`<path d="M${x} ${y} v-56" stroke="#4E9A54" stroke-width="4"/><ellipse cx="${x+8}" cy="${y-24}" rx="8" ry="4" fill="#6DB66A"/><g fill="#FFC93C">${[0,45,90,135,180,225,270,315].map(a=>`<ellipse cx="${x}" cy="${y-70}" rx="5" ry="9" transform="rotate(${a} ${x} ${y-60})"/>`).join('')}</g><circle cx="${x}" cy="${y-60}" r="8" fill="#8a5a2b"/>`],
+ ['Birdhouse',(x,y)=>`<rect x="${x-2}" y="${y-40}" width="4" height="40" fill="#9a6a3a"/><rect x="${x-12}" y="${y-62}" width="24" height="22" fill="#FFD9A8"/><path d="M${x-16} ${y-60} l16 -14 l16 14z" fill="#E07A5F"/><circle cx="${x}" cy="${y-51}" r="4" fill="#5b4a3a"/>`],
+ ['Lavender',(x,y)=>[-8,0,8].map(d=>`<path d="M${x+d} ${y} q${d/3} -16 ${d/2} -30" stroke="#4E9A54" stroke-width="2" fill="none"/><g fill="#A98BE0"><circle cx="${x+d*1.5}" cy="${y-30}" r="3"/><circle cx="${x+d*1.45}" cy="${y-24}" r="3"/><circle cx="${x+d*1.4}" cy="${y-36}" r="2.6"/></g>`).join('')],
+ ['Pond',(x,y)=>`<ellipse cx="${x}" cy="${y-6}" rx="34" ry="11" fill="#9BD3F2"/><ellipse cx="${x-8}" cy="${y-8}" rx="8" ry="3" fill="#6DB66A"/><circle cx="${x-8}" cy="${y-10}" r="3" fill="#F59BB0"/>`],
+ ['Young tree',(x,y)=>`<rect x="${x-4}" y="${y-44}" width="8" height="44" rx="3" fill="#9a6a3a"/><g fill="#5FAE5E"><circle cx="${x}" cy="${y-66}" r="22"/><circle cx="${x-18}" cy="${y-52}" r="14"/><circle cx="${x+18}" cy="${y-52}" r="14"/></g><circle cx="${x+8}" cy="${y-70}" r="3" fill="#E85D5D"/><circle cx="${x-10}" cy="${y-58}" r="3" fill="#E85D5D"/>`],
+ ['Garden bench',(x,y)=>`<rect x="${x-24}" y="${y-18}" width="48" height="6" rx="2" fill="#B07A45"/><rect x="${x-24}" y="${y-30}" width="48" height="5" rx="2" fill="#B07A45"/><rect x="${x-20}" y="${y-14}" width="4" height="14" fill="#8a5a2b"/><rect x="${x+16}" y="${y-14}" width="4" height="14" fill="#8a5a2b"/>`],
+ ['Rose arch',(x,y)=>`<path d="M${x-22} ${y} V${y-44} Q${x} ${y-74} ${x+22} ${y-44} V${y}" stroke="#7a5a3a" stroke-width="4" fill="none"/>${[[-22,-30],[-18,-50],[-6,-62],[8,-62],[18,-50],[22,-30]].map(([a,b])=>`<circle cx="${x+a}" cy="${y+b}" r="4.5" fill="#F07C98"/>`).join('')}`],
+ ['Lantern',(x,y)=>`<rect x="${x-2}" y="${y-50}" width="4" height="50" fill="#5b4a3a"/><circle cx="${x}" cy="${y-60}" r="18" fill="#FFE58A" opacity=".5"/><rect x="${x-8}" y="${y-70}" width="16" height="18" rx="4" fill="#FFD23F"/><path d="M${x-9} ${y-70} h18 l-9 -6z" fill="#5b4a3a"/>`]];
+const SLOTS=[[70,206],[112,214],[160,204],[118,170],[220,210],[268,200],[42,220],[330,224],[300,196],[200,226],[372,206],[30,196]];
+function garden(n,hi=-1){let b=sky(n>8?'#FFF1C9':'#CDEBFB')+sun(n>8?330:345,n>8?46:40)+cloud(90,40,.8)+`<path d="M0 160 Q90 128 200 150 T400 146 V240 H0Z" fill="#B5DC93"/><path d="M0 186 Q120 168 240 182 T400 178 V240 H0Z" fill="#9CD083"/><path d="M200 240 Q220 210 250 200" stroke="#F4E3BE" stroke-width="12" fill="none" stroke-linecap="round"/>`;
+ const order=[0,1,2,4,3,5,6,7,8,9,10,11];
+ for(let i=0;i<Math.min(n,12);i++){const j=order[i];const [x,y]=SLOTS[j];b+=`<g${i===n-1&&hi>=0?' class="pop" style="transform-origin:'+x+'px '+y+'px"':''}>${GI[i][1](x,y)}</g>`}
+ if(n===0)b+=`<g fill="#8a5a2b"><ellipse cx="200" cy="200" rx="18" ry="5"/></g><path d="M200 196 q-2 -10 2 -16 q6 4 -2 16" fill="#6DB66A"/>`;
+ return svg(b)}
+const coverSvg={dg:()=>SC.stones(),gs:()=>svg(sky('#E6F4DF')+hills('#C9E7B6','#B2DC9C')+`<path d="M0 214 Q200 180 400 206" stroke="#F4E3BE" stroke-width="22" fill="none"/>`+person(170,214,1,{tunic:'#E9B9A8',hair:'#2a1d12'})+person(230,216,.95,{tunic:'#7C9CC9',hair:'#5a3a22'})),
+ jf:()=>svg(sky('#E8E0FA')+cloud(300,50)+hills('#D9CDF2','#C9B8F0')+person(200,214,1.2,{tunic:'none',hair:'#3b2a1a',extra:'<path d="M-15 -18 Q-17 -52 0 -56 Q17 -52 15 -18Z" fill="#FFC93C"/><path d="M-15 -18 Q-16 -30 -16 -36 H16 Q16 -30 15 -18Z" fill="#7CC6F2"/><path d="M-14 -44 H14 V-38 H-14Z" fill="#F59BB0"/><path d="M-12 -50 H12 V-46 H-12Z" fill="#8CCB7A"/><circle cx="0" cy="-68" r="13" fill="#D9A47C"/><path d="M-13 -69 Q-14 -85 0 -84 Q14 -85 13 -69 Q8 -77 0 -76 Q-8 -77 -13 -69Z" fill="#3b2a1a"/><circle cx="-4.5" cy="-67" r="1.7" fill="#2c3a4b"/><circle cx="4.5" cy="-67" r="1.7" fill="#2c3a4b"/><path d="M-4 -61 Q0 -57.5 4 -61" stroke="#2c3a4b" stroke-width="1.6" fill="none" stroke-linecap="round"/>'})),
+ zm:()=>svg(sky('#FFE8DD')+hills('#C9E7B6','#B2DC9C')+`<rect x="186" y="120" width="22" height="100" rx="6" fill="#9a6a3a"/><path d="M196 140 Q240 120 268 100" stroke="#9a6a3a" stroke-width="8" fill="none" stroke-linecap="round"/><g fill="#5FAE5E"><circle cx="196" cy="90" r="46"/><circle cx="150" cy="110" r="30"/><circle cx="252" cy="96" r="34"/></g>`+person(255,104,.6,{tunic:'#8E6CC2',hair:'#3b2a1a'}))};
+
+/* ---------- icons ---------- */
+const I={home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>',
+ book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg>',
+ verse:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-2-2-6-2-8-1v14c2-1 6-1 8 1 2-2 6-2 8-1V5c-2-1-6-1-8 1z"/><path d="M12 6v14"/></svg>',
+ garden:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 13c0-4 3-6 7-6 0 4-3 6-7 6zM12 13c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+ x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ lock:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+ sound:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>',
+ star:'<svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z" fill="#FFC93C"/></svg>',
+ play:'<svg viewBox="0 0 24 24" width="30" height="30"><path d="M8 5.5v13l10.5-6.5z" fill="#0e3550"/></svg>',
+ wait:'<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#7a5400" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+ hand:'<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#4b3a85" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V6a1.5 1.5 0 0 1 3 0v6m0-7a1.5 1.5 0 0 1 3 0v7m0-5a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-3l-2-4a1.5 1.5 0 0 1 2.5-1.5L8 15"/></svg>',
+ moon:'<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#173d1c" stroke-width="2.2" stroke-linecap="round"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg>'};
+
+/* ---------- helpers ---------- */
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const av=(c,cls='av')=>{const a=AV[c.av%AV.length];return `<span class="${cls}" style="background:${a[0]};color:${a[1]}">${esc((c.name||'?')[0].toUpperCase())}</span>`};
+const mins=s=>Math.floor(s/60);
+const mmss=s=>{s=Math.ceil(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const actDone=d=>d.story||d.verse;
+function funState(c){const d=D(c.id),s=S.set;
+ if(d.fun&&d.fun.native&&GS)return GS.unlocked&&GS.remainingSec>0?'running':'done';
+ if(d.fun)return d.fun.state;
+ const met=s.rule==='activity'?actDone(d):s.rule==='minutes'?d.faithSec>=s.faith*60:(actDone(d)||d.faithSec>=s.faith*60);
+ if(!met)return 'waiting';if(s.approval==='required'&&!d.approved)return 'ask';return 'ready'}
+function funLeft(d){if(d.fun&&d.fun.native&&GS)return GS.remainingSec;const f=d.fun;if(!f)return S.set.fun*60;const used=f.used+(f.state==='running'?(Date.now()-f.start)/1000:0);return Math.max(0,S.set.fun*60-used)}
+const funApps=()=>NATIVE&&S.set.blockApps.length?S.set.blockApps.map(a=>a.label):S.set.apps;
+const greet=()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
+const FAITH_VIEWS=['story','verse','kind'];
+let speaking=false;
+function say(t){try{const ss=window.speechSynthesis;if(!ss)return;ss.cancel();if(speaking){speaking=false;return}const u=new SpeechSynthesisUtterance(t);u.rate=.92;u.onend=()=>speaking=false;speaking=true;ss.speak(u)}catch(e){}}
+function stopSay(){try{speechSynthesis.cancel()}catch(e){}speaking=false}
+
+/* ---------- views ---------- */
+const app=document.getElementById('app');
+function tabbar(){const t=[['home','Home',I.home],['stories','Stories',I.book],['verse','Verse',I.verse],['garden','Garden',I.garden]];
+ return `<nav class="tabs">${t.map(([v,l,ic])=>`<button data-go="${v}" class="${U.view===v?'on':''}">${ic}${l}</button>`).join('')}</nav>`}
+function topbar(){const c=kid();return `<div class="top"><button class="who" data-act="switch">${av(c)}<span>${esc(c.name)}</span></button><span class="sp"></span><span class="row" style="gap:4px;font-weight:800">${I.star}${P(c.id).stars}</span><button class="gbtn" data-act="parent">${I.lock}Grown-ups</button></div>`}
+function funCard(c){const st=funState(c),d=D(c.id),s=S.set;let ic,bg,h,m,btn='';
+ if(st==='waiting'){const need=s.rule==='activity'?'Finish today\'s faith time to open it.':s.rule==='minutes'?`Spend ${s.faith} minutes in faith time to open it.`:`Finish today's activity or spend ${s.faith} minutes in faith time.`;ic=I.wait;bg='#FFF0C2';h='Faith time first';m=`Your ${s.fun} minutes of fun time are waiting. ${need}`}
+ else if(st==='ask'){ic=I.hand;bg='#E8E0FA';h='Ask a grown-up';m=`Great job! Your ${s.fun} minutes of fun time are ready once a grown-up says yes.`;btn=`<button class="btn ghost" data-act="askparent" style="margin-top:10px">Ask a grown-up</button>`}
+ else if(st==='ready'){ic=I.play;bg='#E3F3FD';h='Fun time is ready!';m=guardOn()?`Unlock your fun apps for ${s.fun} minutes. Enjoy!`:`You have ${s.fun} minutes. Enjoy!`;btn=`<button class="btn sky" data-act="funstart" style="margin-top:10px">${guardOn()?'Unlock my fun apps':'Start fun time'}</button>`}
+ else if(st==='running'||st==='paused'){ic=I.play;bg='#E3F3FD';h=d.fun&&d.fun.native?'Your fun apps are open':st==='running'?'Fun time is on':'Fun time paused';m=`<span data-live="funleft">${mmss(funLeft(d))}</span> left`;btn=`<button class="btn sky" data-go="fun" style="margin-top:10px">Open timer</button>`}
+ else{ic=I.moon;bg='#E6F4DF';h='All done for today';m='Fun time is finished. Time to rest your eyes and play!'}
+ return `<div class="card fun"><span class="ic" style="background:${bg}">${ic}</span><div style="flex:1"><h3>${h}</h3><div class="muted">${m}</div>${btn}</div></div>`}
+function vHome(){const c=kid(),d=D(c.id),p=P(c.id),s=S.set,pct=Math.min(100,Math.round(d.faithSec/(s.faith*60)*100));
+ const st=STORIES.find(x=>x.id==='dg'),k=KIND[(new Date().getDate()+U.kindIx)%KIND.length];
+ return `${topbar()}<div class="main"><div class="hello"><h1>${greet()}, ${esc(c.name)}!</h1><p>Small steps in faith make a big difference.</p></div>
+ <div class="card hero"><div class="pic">${SC.home()}</div><div class="body"><span class="tag sun">Today's faith time</span>
+ <div class="row" style="align-items:flex-start"><div style="flex:1"><h2>${d.story?'You finished today\'s story!':st.t}</h2><div class="muted">${d.story?'Wonderful! You can explore more, practise your verse or try a kindness challenge.':`${st.sub} · about 8 minutes`}</div></div>
+ <div class="ring" data-live="ring" style="--p:${pct}"><b data-live="fmin">${mins(d.faithSec)}/${s.faith}</b></div></div>
+ <button class="btn wide" data-act="openstory" style="margin-top:14px">${d.story?'Read it again':'Start the story'}</button></div></div>
+ ${funCard(c)}
+ <div class="grid">
+ <button class="tile" data-go="verse"><div class="pic">${SC.verse()}</div><div class="tx"><span class="tag sky">Memory verse</span><h3>Psalm 56:3</h3><div class="muted">When I am afraid…</div>${d.verse?'<span class="done-dot">✓ Practised today</span>':''}</div></button>
+ <button class="tile" data-go="kind"><div class="pic">${SC.kind()}</div><div class="tx"><span class="tag pch">Kindness</span><h3>${k[0]}</h3><div class="muted">${k[1]}</div>${d.kind?'<span class="done-dot">✓ Done today</span>':''}</div></button>
+ </div>
+ <button class="card" data-go="garden" style="width:100%;text-align:left;padding:0;display:block"><div class="pic" style="height:130px;position:relative">${garden(p.garden)}</div><div style="padding:12px 16px 14px"><span class="tag">My garden</span><h3 style="font-size:20px">${p.garden?`${p.garden} ${p.garden===1?'thing is':'things are'} growing`:'Plant your first flower'}</h3><div class="muted">Your garden grows each time you learn and love.</div></div></button>
+ <div class="foot"><button data-act="about">© 2026 Anderson Jones · About</button></div></div>${tabbar()}`}
+function vStories(){const c=kid();
+ return `${topbar()}<div class="main"><div class="hello"><h1>Bible stories</h1><p>True stories from the Bible, told for you.</p></div>
+ ${STORIES.filter(x=>S.stories[x.id]).map(x=>`<div class="card"><div class="pic" style="height:140px;position:relative;background:${x.col}">${coverSvg[x.id]()}</div><div style="padding:12px 16px 16px"><span class="tag">${esc(x.th)}</span><h3 style="font-size:22px">${esc(x.t)}</h3><div class="muted">${esc(x.ref)}</div>
+ ${x.ready?`<button class="btn" data-act="openstory" style="margin-top:12px">Read the story</button>`:`<div class="note" style="margin-top:10px">Coming in the full build. This prototype includes David and Goliath.</div>`}</div></div>`).join('')}
+ </div>${tabbar()}`}
+function vGarden(){const c=kid(),p=P(c.id),next=GI[p.garden];
+ return `${topbar()}<div class="main"><div class="hello"><h1>${esc(c.name)}'s garden</h1><p>Every story, verse and kind act helps it grow.</p></div>
+ <div class="card"><div class="pic" style="height:260px;position:relative">${garden(p.garden)}</div><div style="padding:14px 16px 16px">
+ <div class="row"><div style="flex:1"><h3 style="font-size:20px">${p.garden} of 12 planted</h3><div class="muted">${next?`Next to grow: ${next[0].toLowerCase()}`:'Your garden is in full bloom!'}</div></div><span class="row" style="gap:4px;font:800 20px 'Baloo 2',Nunito,system-ui,sans-serif">${I.star}${p.stars}</span></div>
+ ${p.garden?`<div class="chips">${GI.slice(0,p.garden).map(g=>`<span class="chip" style="display:inline-flex;align-items:center">${g[0]}</span>`).join('')}</div>`:''}
+ </div></div><div class="note">There are no streaks to lose here. Your garden never wilts, and you can come back any day.</div></div>${tabbar()}`}
+function vVerse(){const done=U.vs.length===VERSE.parts.length,d=D(kid().id);
+ if(!U.vtiles.length&&!done){U.vtiles=VERSE.parts.map((t,i)=>i).sort(()=>Math.random()-.5);if(U.vtiles.every((v,i)=>v===i))U.vtiles.reverse()}
+ return `${topbar()}<div class="main"><div class="card"><div class="pic" style="height:120px;position:relative">${SC.verse()}</div>
+ <div class="verse">${VERSE.parts.join(' ')}</div><div class="ref">${VERSE.ref} · ${VERSE.tr}</div>
+ <div style="text-align:center"><button class="read" data-act="sayverse">${I.sound}Read it to me</button></div><div style="height:14px"></div></div>
+ <div class="card" style="padding:16px"><span class="tag sky">Build the verse</span><div class="muted">Tap the pieces in the right order.</div>
+ <div class="slots">${VERSE.parts.map((t,i)=>`<div class="slot ${i<U.vs.length?'fill':''}">${i<U.vs.length?esc(t):(i+1)}</div>`).join('')}</div>
+ ${done?`<div class="fb">${U.vagain?'You built it again! ':'You did it! '}“${VERSE.parts.join(' ')}”</div><button class="btn wide leaf" data-act="verseagain" style="margin-top:12px">Practise again</button>`:`<div class="tiles">${U.vtiles.filter(i=>!U.vs.includes(i)).map(i=>`<button class="wt" data-vt="${i}">${esc(VERSE.parts[i])}</button>`).join('')}</div>`}
+ </div></div>${tabbar()}`}
+function vKind(){const k=KIND[(new Date().getDate()+U.kindIx)%KIND.length],d=D(kid().id);
+ return `<div class="full"><div class="bar"><button class="ib" data-go="home" aria-label="Back">${I.back}</button><h2 style="font-size:22px;flex:1">Kindness challenge</h2></div>
+ <div class="scene">${SC.kind()}</div><div class="page"><span class="tag pch">Today's challenge</span><h2>${k[0]}</h2><p class="story">${k[1]}</p>
+ <p class="muted">Jesus said to love one another. Small kind acts show God's love to the people around you.</p>
+ ${d.kind?`<div class="fb">You've already chosen kindness today. Thank you for shining your light!</div>`:''}</div>
+ <div class="nav" style="flex-wrap:wrap">${d.kind?`<button class="btn ghost" data-go="home" style="flex:1">Back home</button>`:`<button class="btn leaf" data-act="kind" data-v="did">I did it!</button><button class="btn ghost" data-act="kind" data-v="try">I'll try today</button>`}</div>
+ <div style="text-align:center"><button class="read" data-act="kindnext" style="background:none">Show me a different one</button></div></div>`}
+function vStory(){const st=DG[U.step],n=DG.length,a=U.ans[U.step];let body='',next=true;
+ const dots=`<div class="dots">${DG.map((_,i)=>`<i class="${i<=U.step?'on':''}"></i>`).join('')}</div>`;
+ if(st.k==='read')body=`<span class="tag">From the Bible · ${st.ref}</span><p class="story">${st.x}</p><button class="read" data-act="say">${I.sound}Read to me</button>`;
+ else if(st.k==='ask'){body=`<span class="tag lil">Story play · your turn to think</span><h2>${st.q}</h2><div class="opts">${st.o.map((o,i)=>`<button class="opt ${a===i?'sel':''}" data-ans="${i}">${o}</button>`).join('')}</div>${a!=null?`<div class="fb">${st.f}</div>`:''}`;next=a!=null}
+ else if(st.k==='quiz'){body=`<span class="tag sun">Story check</span><h2>${st.q}</h2><div class="opts">${st.o.map((o,i)=>`<button class="opt ${a!=null&&i===st.a?'right':a===i?'soft':''}" data-ans="${i}">${o}</button>`).join('')}</div>${a!=null?`<div class="fb">${a===st.a?st.f:st.w}</div>`:''}`;next=a!=null}
+ else if(st.k==='lesson')body=`<span class="tag">What we learn</span><h2>Trusting God</h2><p class="story">${st.x}</p><div class="fb" style="background:#FFF0C2">${st.v}<br><small class="muted">${st.vr}</small></div><button class="read" data-act="say">${I.sound}Read to me</button>`;
+ else if(st.k==='act'){body=`<span class="tag lil">Story play · prayer time</span><h2>${st.q}</h2><div class="chips">${st.o.map((o,i)=>`<button class="chip ${a===i?'on':''}" data-ans="${i}">${o}</button>`).join('')}</div>${a!=null?`<div class="fb" style="background:#FFF0C2">You can pray:<br>“Dear God, when I feel afraid${a===5?'':' of '+st.o[a].toLowerCase().replace('something new','trying something new').replace('a test at school','a test at school')}, help me remember that you are with me. Amen.”</div>`:''}`;next=a!=null}
+ const last=U.step===n-1;
+ return `<div class="full"><div class="bar"><button class="ib" data-act="closestory" aria-label="Close">${I.x}</button>${dots}<span style="width:44px"></span></div>
+ <div class="scene">${SC[st.sc]()}</div><div class="page">${body}</div>
+ <div class="nav">${U.step>0?`<button class="btn ghost" data-act="prev" style="flex:0 0 auto">Back</button>`:''}<button class="btn ${last?'leaf':''}" data-act="${last?'finishstory':'next'}" ${next?'':'disabled'}>${last?'I prayed. Finish!':'Next'}</button></div></div>`}
+function vFun(){const c=kid(),d=D(c.id),st=funState(c),left=funLeft(d),pct=Math.round(left/(S.set.fun*60)*100);
+ return `<div class="full"><div class="bar"><button class="ib" data-go="home" aria-label="Back">${I.back}</button><h2 style="font-size:22px;flex:1">Fun time</h2></div><div class="page" style="text-align:center">
+ <div class="timer" data-live="timer" style="--p:${pct}"><div><span><b data-live="funleft">${mmss(left)}</b><span class="muted">${st==='paused'?'paused':st==='done'?'all done':'left today'}</span></span></div></div>
+ <div class="muted" style="margin-bottom:6px">Your fun apps today</div><div class="chips" style="justify-content:center;margin-bottom:14px">${funApps().map(a=>`<span class="chip" style="display:inline-flex;align-items:center">${esc(a)}</span>`).join('')||'<span class="muted">None chosen yet</span>'}</div>
+ ${d.fun&&d.fun.native?`<div class="honest" style="text-align:left"><span style="flex:none">${I.lock}</span><span>Your fun apps are open. The timer only counts while you're using them. When it reaches zero, they rest until tomorrow.</span></div>`:`<div class="honest" style="text-align:left"><span style="flex:none">${I.lock}</span><span><b>Practice timer.</b> Little Light keeps time for you${NATIVE?', but the faith-first helper is switched off, so your fun apps are not locked. A grown-up can turn it on in Grown-ups › App guard.':", but it can't open, close or block other apps."}</span></div>`}</div>
+ <div class="nav">${d.fun&&d.fun.native?(st==='running'?`<button class="btn leaf" data-act="funend">I'm finished for today</button>`:`<button class="btn" data-go="home">Back home</button>`):st==='running'?`<button class="btn ghost" data-act="funpause">Pause</button><button class="btn leaf" data-act="funend">I'm finished</button>`:st==='paused'?`<button class="btn sky" data-act="funresume">Keep going</button><button class="btn leaf" data-act="funend">I'm finished</button>`:`<button class="btn" data-go="home">Back home</button>`}</div></div>`}
+function vPick(){return `<div class="main" style="display:flex;flex-direction:column;justify-content:center"><div style="text-align:center"><div class="pic" style="height:150px;position:relative;margin:0 -16px">${svg(sky('#FFF8EA')+pip(200,120,1.8))}</div><h1 style="font-size:32px">Who's here today?</h1><p class="muted">Tap your name to begin.</p></div>
+ <div class="pickgrid">${S.children.map(c=>`<button class="pick" data-kid="${c.id}">${av(c)}${esc(c.name)}</button>`).join('')}</div>
+ <div class="foot" style="margin-top:16px">Grown-ups can add children in the <button data-act="parent" style="text-decoration:underline;color:var(--ink2);font-size:13px">Grown-ups area</button>.</div></div>`}
+
+/* ---------- parent ---------- */
+function vParent(){const tabs=[['today','Today'],['routine','Routine'],['children','Children'],['stories','Stories'],['device',NATIVE?'App guard':'Device help']];
+ let b='';const s=S.set;
+ if(U.ptab==='today'){b=S.children.map(c=>{const d=D(c.id),p=P(c.id),st=funState(c),tot=Object.values(p.days).reduce((a,x)=>a+x.appSec,0);
+  const lab={waiting:['Faith time not finished yet','wait'],ask:['Waiting for your yes','wait'],ready:['Fun time ready','ok'],running:['Fun time running','ok'],paused:['Fun time paused','ok'],done:['Fun time finished','ok']}[st];
+  return `<div class="pc"><div class="row">${av(c)}<h3 style="flex:1;margin:0">${esc(c.name)}</h3><span class="badge ${lab[1]}">${lab[0]}</span></div>
+  <div class="stat"><div><b>${mins(d.faithSec)} min</b><span>Faith time today</span></div><div><b>${[d.story&&'Story',d.verse&&'Verse',d.kind&&'Kindness'].filter(Boolean).join(', ')||'Not yet'}</b><span>Done today</span></div><div><b>${p.acts}</b><span>Activities completed</span></div><div><b>${p.stories}</b><span>Stories explored</span></div><div><b>${p.verses}</b><span>Verses practised</span></div><div><b>${p.kind}</b><span>Kindness challenges</span></div><div><b>${mins(tot)} min</b><span>Total time in Little Light</span></div><div><b>${p.garden}/12</b><span>Garden</span></div></div>
+  ${s.approval==='required'&&!d.approved&&!d.fun?`<button class="btn sky wide" data-act="approve" data-c="${c.id}" style="margin-top:12px">${st==='ask'?'Say yes to fun time':'Allow fun time today'}</button>`:''}${d.approved&&!d.fun?`<div class="note">You've said yes to fun time today.</div>`:''}</div>`}).join('')+`<div class="pc"><h3>Talk together</h3><div class="muted">Today's story: David and Goliath</div><ol class="steps">${PROMPTS.dg.map(q=>`<li>${q}</li>`).join('')}</ol></div>`}
+ if(U.ptab==='routine'){b=`<div class="pc"><h3>Daily routine</h3>
+  <div class="li"><span class="lab">Faith time<small>Minutes of stories, verses and kindness</small></span><span class="step"><button data-st="faith:-5">−</button><b>${s.faith} min</b><button data-st="faith:5">+</button></span></div>
+  <div class="li"><span class="lab">Fun time allowance<small>Recreational screen time each day</small></span><span class="step"><button data-st="fun:-5">−</button><b>${s.fun} min</b><button data-st="fun:5">+</button></span></div>
+  <div class="li col" style="padding:10px 0"><span class="lab">Fun time opens when<small>Choose what unlocks it</small></span><div class="seg">${[['activity','Activity done'],['minutes','Time reached'],['either','Either']].map(([v,l])=>`<button class="${s.rule===v?'on':''}" data-set="rule:${v}">${l}</button>`).join('')}</div></div>
+  <div class="li col" style="padding:10px 0"><span class="lab">Grown-up approval<small>Required means you say yes each day</small></span><div class="seg">${[['optional','Optional'],['required','Required']].map(([v,l])=>`<button class="${s.approval===v?'on':''}" data-set="approval:${v}">${l}</button>`).join('')}</div></div></div>
+  ${NATIVE?`<div class="pc"><h3>Fun apps</h3><div class="muted">${S.set.blockApps.length?esc(S.set.blockApps.map(a=>a.label).join(', ')):'No apps chosen yet.'}</div><button class="btn ghost wide" data-pt="device" style="margin-top:10px">Choose apps in App guard</button></div>`:''}
+  <div class="pc" style="${NATIVE?'display:none':''}"><h3>Fun apps</h3><div class="muted">These are shown on your child's practice timer as a reminder. Little Light can't open or block them.</div>
+  ${s.apps.map((a,i)=>`<div class="li"><span class="lab">${esc(a)}</span><button class="xs" data-rmapp="${i}">Remove</button></div>`).join('')}
+  <form class="row" data-form="app" style="margin-top:8px"><input class="tin" name="a" placeholder="Add an app, e.g. Minecraft" maxlength="30"><button class="xs">Add</button></form></div>
+  <div class="pc"><h3>Parent PIN</h3><div class="li"><span class="lab">Change your 4-digit PIN</span><button class="xs" data-act="changepin">Change</button></div></div>
+  <div class="pc"><h3>Testing tools</h3><div class="muted">Only in test versions, so you can try things without waiting. These will be removed before release.</div>
+  <div class="li"><span class="lab">Add 5 faith minutes to ${esc(kid()?kid().name:'child')}</span><button class="xs" data-act="demo5">+5 min</button></div>
+  <div class="li"><span class="lab">Make fun time 1 minute<small>To see the timer finish</small></span><button class="xs" data-act="demo1">Set</button></div>
+  <div class="li"><span class="lab">Reset today for everyone</span><button class="xs warn" data-act="resetday">${U.confirm==='resetday'?'Tap again':'Reset'}</button></div>
+  <div class="li"><span class="lab">Erase everything and start over</span><button class="xs warn" data-act="resetall">${U.confirm==='resetall'?'Tap again':'Erase'}</button></div></div>`}
+ if(U.ptab==='children'){b=`<div class="pc"><h3>Children</h3><div class="muted">Only a first name or nickname is needed. Nothing leaves this phone.</div>
+  ${S.children.map((c,i)=>`<div class="li" style="flex-wrap:wrap;padding:8px 0">${av(c)}<input class="tin" data-name="${c.id}" value="${esc(c.name)}" maxlength="16" aria-label="Name"><div class="row" style="gap:6px;width:100%;padding-left:46px">${AV.map((a,j)=>`<button data-avc="${c.id}:${j}" aria-label="Colour" style="width:34px;height:34px;border-radius:50%;background:${a[0]};${c.av===j?'outline:3px solid var(--ink);outline-offset:2px':''}"></button>`).join('')}<span style="flex:1"></span>${S.children.length>1?`<button class="xs warn" data-rmkid="${c.id}">${U.confirm==='k'+c.id?'Tap again':'Remove'}</button>`:''}</div></div>`).join('')}
+  ${S.children.length<4?`<button class="btn ghost wide" data-act="addkid" style="margin-top:8px">Add a child</button>`:'<div class="note">Up to 4 children per phone.</div>'}</div>`}
+ if(U.ptab==='stories'){b=STORIES.map(x=>`<div class="pc"><div class="row"><div style="flex:1"><h3>${x.t}</h3><div class="muted">${x.th} · ${x.ref}</div></div><div class="seg"><button class="${S.stories[x.id]?'on':''}" data-story="${x.id}:1">Show</button><button class="${S.stories[x.id]?'':'on'}" data-story="${x.id}:0">Hide</button></div></div>
+  ${x.ready?'<span class="badge ok">Ready</span>':'<span class="badge">Coming in the full build</span>'}<details><summary>Family talk prompts</summary><ol class="steps">${PROMPTS[x.id].map(q=>`<li>${q}</li>`).join('')}</ol></details></div>`).join('')+`<div class="note">Bible sections are child-friendly retellings with references. Questions and prayers marked “Story play” are not Bible text. The memory verse uses the World English Bible (public domain).</div>`}
+ if(U.ptab==='device'&&NATIVE){b=vGuard()}
+ else if(U.ptab==='device'){b=`<div class="pc"><h3>What Little Light can and can't do</h3><p class="muted" style="margin:4px 0 0">Little Light builds a daily faith routine and keeps a practice timer for fun time. As a web app it <b>cannot</b> see, open, close or block other apps like YouTube or games. For real limits, use your phone's own controls together with Little Light.</p></div>
+  <div class="pc"><h3>iPhone and iPad: Screen Time</h3><ol class="steps"><li>Open <b>Settings</b> and tap <b>Screen Time</b>.</li><li>Tap <b>App Limits</b>, then <b>Add Limit</b>.</li><li>Choose the apps or categories (for example Games or Entertainment) and set a daily time.</li><li>Turn on <b>Use Screen Time Passcode</b> so only you can change limits.</li></ol></div>
+  <div class="pc"><h3>Android: Family Link or Digital Wellbeing</h3><ol class="steps"><li>For a child's own phone, install <b>Google Family Link</b> on your phone and follow its setup.</li><li>If your child uses your phone, open <b>Settings</b> › <b>Digital Wellbeing &amp; parental controls</b> › <b>Dashboard</b>.</li><li>Tap an app and set an <b>app timer</b>.</li></ol><div class="note">Menu names vary a little between phone makers.</div></div>`}
+ return `<div class="full pmode"><div class="bar"><h2 style="font-size:24px;flex:1;padding-left:6px">Grown-ups</h2><button class="btn sky" data-act="pdone" style="min-height:44px;font-size:16px">Back to kids</button></div>
+ <div class="pchips">${tabs.map(([v,l])=>`<button class="${U.ptab===v?'on':''}" data-pt="${v}">${l}</button>`).join('')}</div><div class="main">${b}<div class="foot"><button data-act="about">© 2026 Anderson Jones · About</button></div></div></div>`}
+
+function vGuard(){const g=GS||{},sel=new Set(S.set.blockApps.map(a=>a.pkg)),ready=g.usageAccess&&g.overlay;
+ const state=!g.enabled?['Off','']:!ready?['Needs permissions','wait']:g.paused?['Paused for grown-up time','wait']:['On','ok'];
+ const perm=(ok,t,sub,k)=>`<div class="perm"><span class="lab" style="flex:1;font-weight:700">${t}<small style="display:block;color:var(--ink2);font-weight:600;font-size:13px">${sub}</small></span>${ok?'<span class="ok">✓ Allowed</span>':`<button class="xs" data-disc="${k}">Allow</button>`}</div>`;
+ const apps=U.apps||[];
+ const until=g.pausedUntil?new Date(g.pausedUntil).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'';
+ return `<div class="pc"><div class="row"><div style="flex:1"><h3>Faith-first helper</h3><div class="muted">When it's on, the fun apps you choose stay closed until faith time is done, then open for ${S.set.fun} minutes.</div></div></div>
+  <div class="li"><span class="lab">Helper<small><span class="badge ${state[1]}">${state[0]}</span></small></span><button class="tog ${g.enabled?'on':''}" data-act="gtoggle" aria-label="Turn helper on or off"></button></div>
+  ${g.enabled&&ready?(g.paused?`<div class="note">Paused until ${until}. Fun apps are open for grown-up use.</div><button class="btn sky wide" data-gpause="0" style="margin-top:10px">Turn the helper back on now</button>`:`<div class="muted" style="margin-top:6px">Using this phone yourself? Pause the helper:</div><div class="chips"><button class="chip" data-gpause="30">30 min</button><button class="chip" data-gpause="60">1 hour</button><button class="chip" data-gpause="tomorrow">Until tomorrow</button></div>`):''}
+  ${U.gmsg?`<div class="note">${U.gmsg}</div>`:''}</div>
+  <div class="pc"><h3>1. Allow the helper</h3><div class="muted">Android asks you to allow these in Settings. Little Light explains each one first.</div>
+  ${perm(g.usageAccess,'Usage access','To know which app is open','usage')}${perm(g.overlay,'Display over other apps','To show the "Faith time first" screen','overlay')}${perm(g.notifications,'Notifications','Shows that the helper is on (optional)','notif')}</div>
+  <div class="pc"><h3>2. Choose the fun apps</h3><div class="muted">${sel.size?sel.size+' chosen':'Choose games, video and social apps your child uses.'}</div>
+  ${U.apps?`<input class="tin" style="width:100%;margin-top:8px" placeholder="Search apps" data-appq>
+  <div class="applist">${apps.map(a=>`<div class="li" data-l="${esc(a.label.toLowerCase())}">${a.icon?`<img src="${a.icon}" alt="">`:''}<span class="lab">${esc(a.label)}</span><button class="tog ${sel.has(a.pkg)?'on':''}" data-pkg="${esc(a.pkg)}" aria-label="Lock ${esc(a.label)}"></button></div>`).join('')||'<div class="muted" style="padding:10px 0">No apps found.</div>'}</div>`:`<button class="btn ghost wide" data-act="loadapps" style="margin-top:10px">Show apps on this phone</button>`}</div>
+  <div class="pc"><h3>Good to know</h3><ul class="steps" style="padding-left:18px;margin:6px 0 0"><li>Fun time is shared by everyone using this phone each day.</li><li>The helper only sees which app is open. It never reads the screen, and nothing leaves this phone.</li><li>An older child could switch the helper off in Settings. On a child's own phone, use Google Family Link alongside Little Light.</li></ul></div>`}
+
+/* ---------- overlays ---------- */
+function ovHtml(){const o=U.ov;if(!o)return '';
+ if(o.t==='pin'){const title=U.pinMode==='set'?(U.pinFirst?'Enter it once more':'Create a parent PIN'):'Grown-ups only';const sub=U.pinMode==='set'?'Choose 4 numbers your children won\'t guess.':o.msg||'Enter your 4-digit PIN.';
+  return `<div class="ov mid"><div class="sheet pop" style="max-width:360px"><div class="row"><h2 style="flex:1;font-size:24px">${title}</h2><button class="ib" data-act="closeov" aria-label="Close">${I.x}</button></div><div class="muted">${sub}</div>
+  <div class="pd">${[0,1,2,3].map(i=>`<i class="${i<U.pin.length?'on':''}"></i>`).join('')}</div>${o.err?`<div style="text-align:center;color:#8a3d22;font-weight:800;margin-top:8px">${o.err}</div>`:''}
+  <div class="pinpad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-pin="${n}">${n}</button>`).join('')}<button data-act="forgot" style="font-size:13px;font-family:Nunito">${U.pinMode==='set'?'':'Forgot?'}</button><button data-pin="0">0</button><button data-pin="del" style="font-size:16px">Delete</button></div></div></div>`}
+ if(o.t==='forgot')return `<div class="ov mid"><div class="sheet pop" style="max-width:360px"><h2 style="font-size:24px">Reset the PIN</h2><p class="muted">Answer this grown-up question to choose a new PIN. Your children's progress is kept.</p><p style="font:800 26px 'Baloo 2',Nunito,system-ui,sans-serif;text-align:center">What is ${o.a} × ${o.b}?</p><form data-form="forgot" class="row"><input class="tin" name="n" inputmode="numeric" autocomplete="off" aria-label="Answer"><button class="xs">Check</button></form>${o.err?`<p style="color:#8a3d22;font-weight:800">${o.err}</p>`:''}<button class="btn ghost wide" data-act="closeov" style="margin-top:12px">Cancel</button></div></div>`;
+ if(o.t==='approve'){const c=S.children.find(x=>x.id===o.c);return `<div class="ov mid"><div class="sheet pop" style="max-width:360px;text-align:center">${av(c)}<h2 style="font-size:24px;margin-top:8px">Let ${esc(c.name)} start fun time?</h2><p class="muted">${S.set.fun} minutes today. Faith time is done.</p><button class="btn sky wide" data-act="approve" data-c="${c.id}" data-close="1">Yes, enjoy!</button><button class="btn ghost wide" data-act="closeov" style="margin-top:10px">Not right now</button></div></div>`}
+ if(o.t==='cele'){const c=kid(),p=P(c.id);return `<div class="ov mid"><div class="sheet pop cele" style="max-width:380px;text-align:center"><div style="height:150px;position:relative;border-radius:20px;overflow:hidden">${garden(p.garden,1)}</div><h2 style="font-size:28px;margin-top:12px">${o.h}</h2><p class="muted" style="font-size:16px">${o.m}${o.item?` A <b>${o.item.toLowerCase()}</b> grew in your garden!`:''}</p>${funState(c)==='ready'||funState(c)==='ask'?`<div class="fb" style="text-align:left">${funState(c)==='ready'?'Your fun time is ready when you are.':'Ask a grown-up to say yes to your fun time.'}</div>`:''}<div class="nav" style="padding:12px 0 0"><button class="btn ghost" data-act="ovgarden">See garden</button><button class="btn" data-act="ovhome">Home</button></div></div></div>`}
+ if(o.t==='disc'){const T={usage:['Usage access','Little Light uses Usage access to see which app is open on this phone. It uses this only to show the "Faith time first" screen when a fun app you chose is opened before faith time, and to count your child\'s fun-time minutes.'],overlay:['Display over other apps','This lets Little Light show its friendly "Faith time first" screen on top of the fun apps you chose, until faith time is done or when today\'s fun time is used up.'],notif:['Notifications','Android shows a small notification while the helper is on, so you always know it is running. Little Light does not send other notifications.']}[o.k];
+  return `<div class="ov mid"><div class="sheet pop" style="max-width:400px"><h2 style="font-size:24px">${T[0]}</h2><p>${T[1]}</p>${o.k!=='notif'?`<div class="note" style="background:#EEF6FC">Little Light does <b>not</b> read what's on the screen, see messages or record anything. This stays on this phone and is never sent anywhere. You can turn it off any time in Settings.</div>`:''}<p class="muted">${o.k==='notif'?'Tap Continue, then Allow.':`Tap Continue, find <b>Little Light</b> and switch it on, then come back.`}</p><button class="btn sky wide" data-act="disccont" data-k="${o.k}">Continue</button><button class="btn ghost wide" data-act="closeov" style="margin-top:10px">Not now</button></div></div>`}
+ if(o.t==='gate')return `<div class="ov mid"><div class="sheet pop" style="max-width:380px;text-align:center"><div style="height:140px;position:relative;border-radius:20px;overflow:hidden">${SC.pip()}</div><h2 style="font-size:28px;margin-top:12px">Faith time first!</h2><p class="muted" style="font-size:16px">${esc(o.label||'Your fun app')} is resting for now. Let's spend a little time with God, then your fun time can begin.</p><button class="btn wide" data-act="ovhome">Let's go</button></div></div>`;
+ if(o.t==='about')return `<div class="ov mid"><div class="sheet pop" style="max-width:380px"><div class="row"><h2 style="flex:1;font-size:26px">Little Light</h2><button class="ib" data-act="closeov" aria-label="Close">${I.x}</button></div><p class="muted">Small steps in faith make a big difference.</p><p>Designed by Anderson Jones.<br>© 2026 Anderson Jones. All rights reserved.</p><p class="muted">Feedback: andy.andersonjones@gmail.com</p><p class="muted" style="font-size:13px">Test version. Everything is saved only on this device. No ads, no tracking, no accounts.</p></div></div>`;
+ return ''}
+
+/* ---------- render ---------- */
+function render(){
+ if(!S.cur||!kid()){S.cur=S.children.length===1?S.children[0].id:null}
+ let h;
+ if(U.view==='parent')h=vParent();
+ else if(!S.cur)h=vPick();
+ else h={home:vHome,stories:vStories,garden:vGarden,verse:vVerse,kind:vKind,story:vStory,fun:vFun}[U.view]();
+ app.innerHTML=h+ovHtml();
+ const tc=U.view==='parent'?'#F4F6F8':'#FFF8EA',m=document.querySelector('meta[name=theme-color]');if(m.content!==tc)m.content=tc;
+ U.lastFun=S.cur&&kid()?funState(kid()):null}
+function go(v){stopSay();U.view=v;U.confirm=null;render();const m=app.querySelector('.main,.page');if(m)m.scrollTop=0}
+function reward(type,h,m){const c=kid(),d=D(c.id),p=P(c.id);let item=null;
+ if(!d[type]){d[type]=true;p.stars++;if(p.garden<12){item=GI[p.garden][0];p.garden++}}
+ if(type==='story'){p.stories++;p.acts++}if(type==='verse'){p.verses++;p.acts++}if(type==='kind')p.kind++;
+ save();U.ov={t:'cele',h,m:m+(item?'':''),item};render()}
+function openPin(after,msg){U.pin='';U.pinFirst='';U.pinMode=S.pin?'check':'set';U.pinAfter=after;U.ov={t:'pin',msg};render()}
+
+/* ---------- events ---------- */
+app.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const ds=t.dataset;
+ if(ds.go){if(ds.go==='verse'){U.vs=[];U.vtiles=[]}go(ds.go);return}
+ if(ds.kid){S.cur=ds.kid;save();go('home');return}
+ if(ds.pt){U.ptab=ds.pt;U.confirm=null;render();return}
+ if(ds.ans!=null){U.ans[U.step]=+ds.ans;render();return}
+ if(ds.vt!=null){const i=+ds.vt;U.vagain=D(S.cur).verse;if(i===U.vs.length){U.vs.push(i);if(U.vs.length===VERSE.parts.length){render();reward('verse','Verse complete!','You put God\'s word together.')}else render()}else{t.classList.remove('shake');void t.offsetWidth;t.classList.add('shake')}return}
+ if(ds.pin){if(ds.pin==='del')U.pin=U.pin.slice(0,-1);else if(U.pin.length<4)U.pin+=ds.pin;U.ov.err='';
+  if(U.pin.length===4){if(U.pinMode==='set'){if(!U.pinFirst){U.pinFirst=U.pin;U.pin=''}else if(U.pinFirst===U.pin){S.pin=U.pin;save();const f=U.pinAfter;U.ov=null;U.pin='';f&&f();return}else{U.pinFirst='';U.pin='';U.ov.err='Those didn\'t match. Try again.'}}
+   else{if(U.pin===S.pin){const f=U.pinAfter;U.ov=null;U.pin='';f&&f();return}U.pin='';U.ov.err='That PIN isn\'t right.'}}
+  render();return}
+ if(ds.st){const [k,v]=ds.st.split(':');const lim=k==='faith'?[5,60]:[5,180];S.set[k]=Math.min(lim[1],Math.max(lim[0],S.set[k]+ +v));save();if(k==='fun')gCall('configure',{allowanceSec:S.set.fun*60}).then(render);render();return}
+ if(ds.disc){U.ov={t:'disc',k:ds.disc};render();return}
+ if(ds.gpause){let m=ds.gpause==='tomorrow'?Math.ceil((new Date(new Date().setHours(24,0,0,0))-Date.now())/60000):+ds.gpause;gCall('pause',{minutes:m}).then(render);return}
+ if(ds.pkg){const i=S.set.blockApps.findIndex(a=>a.pkg===ds.pkg);if(i>=0)S.set.blockApps.splice(i,1);else{const a=(U.apps||[]).find(x=>x.pkg===ds.pkg);S.set.blockApps.push({pkg:ds.pkg,label:a?a.label:ds.pkg})}save();t.classList.toggle('on');gCall('configure',{blocked:S.set.blockApps.map(a=>a.pkg)}).then(()=>{const sc=app.querySelector('.applist');const st=sc?sc.scrollTop:0;const m=app.querySelector('.main');const ms=m?m.scrollTop:0;render();const sc2=app.querySelector('.applist');if(sc2)sc2.scrollTop=st;const m2=app.querySelector('.main');if(m2)m2.scrollTop=ms});return}
+ if(ds.set){const [k,v]=ds.set.split(':');S.set[k]=v;save();render();return}
+ if(ds.story){const [k,v]=ds.story.split(':');S.stories[k]=v==='1';save();render();return}
+ if(ds.rmapp!=null){S.set.apps.splice(+ds.rmapp,1);save();render();return}
+ if(ds.avc){const [id,j]=ds.avc.split(':');S.children.find(c=>c.id===id).av=+j;save();render();return}
+ if(ds.rmkid){const id=ds.rmkid;if(U.confirm!=='k'+id){U.confirm='k'+id;render();return}S.children=S.children.filter(c=>c.id!==id);delete S.prog[id];if(S.cur===id)S.cur=null;U.confirm=null;save();render();return}
+ const a=ds.act;if(!a)return;
+ const A={
+  switch:()=>{if(S.children.length>1){S.cur=null;save();go('home')}},
+  parent:()=>openPin(()=>{U.view='parent';U.ptab='today';render()}),
+  pdone:()=>{U.view='home';render()},
+  openstory:()=>{U.step=0;U.ans={};go('story')},
+  closestory:()=>go('home'),
+  next:()=>{stopSay();U.step++;render();app.querySelector('.page').scrollTop=0},
+  prev:()=>{stopSay();U.step--;render()},
+  say:()=>{const st=DG[U.step];say(st.k==='lesson'?st.x+' '+st.v.replace(/[“”]/g,''):st.x)},
+  sayverse:()=>say(VERSE.parts.join(' ')),
+  finishstory:()=>{stopSay();U.view='home';reward('story','Story complete!',CHEER[Math.floor(Math.random()*CHEER.length)])},
+  verseagain:()=>{U.vs=[];U.vtiles=[];render()},
+  kind:()=>reward('kind',ds.v==='did'?'Thank you for being kind!':'What a lovely plan!',ds.v==='did'?'You showed God\'s love to someone today.':'Trying is a wonderful step. Let us know when you do it!'),
+  kindnext:()=>{U.kindIx++;render()},
+  askparent:()=>openPin(()=>{U.ov={t:'approve',c:S.cur};render()},'A grown-up needs to say yes.'),
+  approve:()=>{D(ds.c).approved=true;save();if(ds.close)U.ov=null;render()},
+  funstart:async()=>{if(guardOn()){await gCall('setUnlocked',{unlocked:true});D(S.cur).fun={state:'running',native:true}}else D(S.cur).fun={state:'running',start:Date.now(),used:0};save();go('fun')},
+  funpause:()=>{const f=D(S.cur).fun;f.used+=(Date.now()-f.start)/1000;f.state='paused';save();render()},
+  funresume:()=>{const f=D(S.cur).fun;f.start=Date.now();f.state='running';save();render()},
+  funend:async()=>{const f=D(S.cur).fun;if(f.native){await gCall('finishFun');save();render();return}if(f.state==='running')f.used+=(Date.now()-f.start)/1000;f.state='done';save();render()},
+  closeov:()=>{U.ov=null;render()},
+  ovhome:()=>{U.ov=null;go('home')},ovgarden:()=>{U.ov=null;go('garden')},
+  about:()=>{U.ov={t:'about'};render()},
+  forgot:()=>{if(U.pinMode==='set')return;const a=6+Math.floor(Math.random()*7),b=6+Math.floor(Math.random()*7);U.ov={t:'forgot',a,b,after:U.pinAfter};render()},
+  changepin:()=>{U.pin='';U.pinFirst='';U.pinMode='set';U.pinAfter=()=>render();U.ov={t:'pin'};render()},
+  addkid:()=>{const id='c'+Date.now().toString(36);S.children.push({id,name:'New child',av:S.children.length%AV.length});save();render()},
+  demo5:()=>{if(kid()){D(S.cur).faithSec+=300;save();render()}},
+  demo1:()=>{S.set.fun=1;save();gCall('configure',{allowanceSec:60}).then(render);render()},
+  resetday:()=>{if(U.confirm!=='resetday'){U.confirm='resetday';render();return}const k=dk();Object.values(S.prog).forEach(p=>delete p.days[k]);U.confirm=null;save();gCall('resetToday').then(render);render()},
+  resetall:()=>{if(U.confirm!=='resetall'){U.confirm='resetall';render();return}S=fresh();U.confirm=null;save();U.view='home';gCall('configure',{enabled:false,blocked:[],allowanceSec:S.set.fun*60}).then(()=>gCall('resetToday')).then(render);render()},
+  disccont:()=>{const k=U.ov.k;U.ov=null;render();gCall(k==='usage'?'openUsageSettings':k==='overlay'?'openOverlaySettings':'requestNotifications')},
+  loadapps:async()=>{if(!G)return;try{const r=await G.listApps();U.apps=r.apps||[]}catch(e){U.apps=[]}render()},
+  gtoggle:async()=>{await gStatus();const g=GS||{};U.gmsg='';if(!g.enabled){if(!g.usageAccess||!g.overlay){U.gmsg='First allow Usage access and Display over other apps below.';render();return}if(!S.set.blockApps.length){U.gmsg='First choose at least one fun app below.';render();return}await gCall('configure',{enabled:true,blocked:S.set.blockApps.map(a=>a.pkg),allowanceSec:S.set.fun*60})}else await gCall('configure',{enabled:false});render()}};
+ if(A[a])A[a]()});
+app.addEventListener('submit',e=>{e.preventDefault();const f=e.target,k=f.dataset.form;
+ if(k==='app'){const v=f.a.value.trim();if(v&&S.set.apps.length<8){S.set.apps.push(v);save()}render()}
+ if(k==='forgot'){const o=U.ov;if(+f.n.value===o.a*o.b){U.pin='';U.pinFirst='';U.pinMode='set';U.ov={t:'pin'}}else o.err='Not quite. Try again.';render()}});
+app.addEventListener('input',e=>{if(e.target.dataset.appq==null)return;const q=e.target.value.trim().toLowerCase();app.querySelectorAll('.applist .li').forEach(li=>{li.style.display=!q||li.dataset.l.includes(q)?'':'none'})});
+app.addEventListener('change',e=>{const id=e.target.dataset.name;if(!id)return;const c=S.children.find(x=>x.id===id);c.name=e.target.value.trim().slice(0,16)||'Child';save();render()});
+
+/* ---------- live clock ---------- */
+setInterval(()=>{if(document.hidden||!S.cur||!kid()||U.view==='parent')return;const c=kid(),d=D(c.id);d.appSec++;
+ if(FAITH_VIEWS.includes(U.view)&&!U.ov)d.faithSec++;
+ if(d.fun&&d.fun.state==='running'&&funLeft(d)<=0){d.fun.used=S.set.fun*60;d.fun.state='done'}
+ if(d.appSec%5===0)save();
+ const fs=funState(c);if(fs!==U.lastFun&&(U.view==='home'||U.view==='fun')&&!U.ov){save();render();return}
+ const s=S.set,pct=Math.min(100,Math.round(d.faithSec/(s.faith*60)*100));
+ app.querySelectorAll('[data-live]').forEach(el=>{const k=el.dataset.live;
+  if(k==='ring')el.style.setProperty('--p',pct);if(k==='fmin')el.textContent=mins(d.faithSec)+'/'+s.faith;
+  if(k==='funleft')el.textContent=mmss(funLeft(d));if(k==='timer')el.style.setProperty('--p',Math.round(funLeft(d)/(s.fun*60)*100))})},1000);
+let gTick=0;
+setInterval(()=>{if(!G||document.hidden)return;gTick++;if(gTick%5)return;if(['home','fun','parent'].includes(U.view)&&!U.ov&&!(document.activeElement&&document.activeElement.tagName==='INPUT'))gStatus().then(()=>{const c=kid();if(U.view==='parent'||(c&&funState(c)!==U.lastFun))render();else app.querySelectorAll('[data-live=funleft]').forEach(el=>el.textContent=mmss(funLeft(D(c.id))))})},1000);
+async function onResume(){if(!G)return;await gStatus();const g=GS||{};
+ if(g.gateMode&&Date.now()-g.gateAt<120000){const m=g.gateMode,l=g.gateLabel;gCall('clearGate');
+  if(m==='parent'){openPin(()=>{U.view='parent';U.ptab='device';render()},'Enter your PIN to pause the helper.');return}
+  if(m==='done'){if(S.cur){U.view='garden'}render();return}
+  if(S.cur){U.view='home';U.ov={t:'gate',label:l}}render();return}
+ if(!(document.activeElement&&document.activeElement.tagName==='INPUT'))render()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else onResume()});
+if(G){try{G.addListener('resume',onResume)}catch(e){}if(S.set.fun)gCall('configure',{allowanceSec:S.set.fun*60})}
+render();onResume();
+}
+</script>
+</body>
+</html>

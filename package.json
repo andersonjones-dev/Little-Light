@@ -1,0 +1,12 @@
+{
+  "name": "little-light",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Little Light: small steps in faith make a big difference.",
+  "scripts": { "sync": "cap sync android" },
+  "dependencies": {
+    "@capacitor/android": "8.6.2",
+    "@capacitor/core": "8.6.2"
+  },
+  "devDependencies": { "@capacitor/cli": "8.6.2" }
+}

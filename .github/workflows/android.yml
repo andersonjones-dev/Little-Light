@@ -1,0 +1,56 @@
+name: Build Android app
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Install and copy the app screens into Android
+        run: |
+          npm ci
+          npx cap sync android
+
+      - name: Build test app (APK)
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+          cp app/build/outputs/apk/debug/app-debug.apk ../LittleLight-test.apk
+
+      - name: Keep a copy on this run
+        uses: actions/upload-artifact@v4
+        with:
+          name: LittleLight-test-apk
+          path: LittleLight-test.apk
+
+      - name: Publish to the "Test build" download page
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: test-build
+          name: Little Light test build
+          prerelease: true
+          make_latest: false
+          body: |
+            Latest test version of Little Light for Android (built automatically from ${{ github.sha }}).
+            On an Android phone: tap LittleLight-test.apk below, then Install. Android may ask you to allow installs from your browser first.
+          files: LittleLight-test.apk

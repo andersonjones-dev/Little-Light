@@ -1,0 +1,6 @@
+{
+  "appId": "dev.andersonjones.littlelight",
+  "appName": "Little Light",
+  "webDir": "www",
+  "android": { "allowMixedContent": false, "webContentsDebuggingEnabled": false }
+}
