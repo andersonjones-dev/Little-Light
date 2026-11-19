@@ -299,6 +299,7 @@ function vHome(){const c=kid(),d=D(c.id),p=P(c.id),s=S.set,pct=Math.min(100,Math
  <button class="tile" data-go="kind"><div class="pic">${SC.kind()}</div><div class="tx"><span class="tag pch">Kindness</span><h3>${k[0]}</h3><div class="muted">${k[1]}</div>${d.kind?'<span class="done-dot">✓ Done today</span>':''}</div></button>
  </div>
  <button class="card" data-go="garden" style="width:100%;text-align:left;padding:0;display:block"><div class="pic" style="height:130px;position:relative">${garden(p.garden)}</div><div style="padding:12px 16px 14px"><span class="tag">My garden</span><h3 style="font-size:20px">${p.garden?`${p.garden} ${p.garden===1?'thing is':'things are'} growing`:'Plant your first flower'}</h3><div class="muted">Your garden grows each time you learn and love.</div></div></button>
+ ${window.__demoOpen?`<button class="btn ghost wide" data-act="demoopen" style="margin-bottom:12px">Preview: pretend to open YouTube</button>`:''}
  <div class="foot"><button data-act="about">© 2026 Anderson Jones · About</button></div></div>${tabbar()}`}
 function vStories(){const c=kid();
  return `${topbar()}<div class="main"><div class="hello"><h1>Bible stories</h1><p>True stories from the Bible, told for you.</p></div>
@@ -369,6 +370,7 @@ function vParent(){const tabs=[['today','Today'],['routine','Routine'],['childre
   <div class="pc"><h3>Testing tools</h3><div class="muted">Only in test versions, so you can try things without waiting. These will be removed before release.</div>
   <div class="li"><span class="lab">Add 5 faith minutes to ${esc(kid()?kid().name:'child')}</span><button class="xs" data-act="demo5">+5 min</button></div>
   <div class="li"><span class="lab">Make fun time 1 minute<small>To see the timer finish</small></span><button class="xs" data-act="demo1">Set</button></div>
+  ${window.__demoOpen?`<div class="li"><span class="lab">Pretend to open YouTube<small>Preview of what the Android helper shows</small></span><button class="xs" data-act="demoopen">Try it</button></div>`:''}
   <div class="li"><span class="lab">Reset today for everyone</span><button class="xs warn" data-act="resetday">${U.confirm==='resetday'?'Tap again':'Reset'}</button></div>
   <div class="li"><span class="lab">Erase everything and start over</span><button class="xs warn" data-act="resetall">${U.confirm==='resetall'?'Tap again':'Erase'}</button></div></div>`}
  if(U.ptab==='children'){b=`<div class="pc"><h3>Children</h3><div class="muted">Only a first name or nickname is needed. Nothing leaves this phone.</div>
@@ -479,6 +481,7 @@ app.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return
   changepin:()=>{U.pin='';U.pinFirst='';U.pinMode='set';U.pinAfter=()=>render();U.ov={t:'pin'};render()},
   addkid:()=>{const id='c'+Date.now().toString(36);S.children.push({id,name:'New child',av:S.children.length%AV.length});save();render()},
   demo5:()=>{if(kid()){D(S.cur).faithSec+=300;save();render()}},
+  demoopen:()=>{window.__demoOpen&&window.__demoOpen()},
   demo1:()=>{S.set.fun=1;save();gCall('configure',{allowanceSec:60}).then(render);render()},
   resetday:()=>{if(U.confirm!=='resetday'){U.confirm='resetday';render();return}const k=dk();Object.values(S.prog).forEach(p=>delete p.days[k]);U.confirm=null;save();gCall('resetToday').then(render);render()},
   resetall:()=>{if(U.confirm!=='resetall'){U.confirm='resetall';render();return}S=fresh();U.confirm=null;save();U.view='home';gCall('configure',{enabled:false,blocked:[],allowanceSec:S.set.fun*60}).then(()=>gCall('resetToday')).then(render);render()},
